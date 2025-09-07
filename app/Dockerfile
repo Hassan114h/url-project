@@ -8,7 +8,7 @@ COPY src/ ./src
 
 FROM gcr.io/distroless/python3-debian12
 ENV PYTHONPATH=/app \
-     TABLE_NAME=changeme
+     TABLE_NAME=urltable 
 WORKDIR /app
 COPY --from=build /out /usr/local
 COPY --from=build /w/src /app
