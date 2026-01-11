@@ -1,11 +1,9 @@
 variable "service_name" {
   type    = string
-  default = "url_sv"
 }
 
 variable "cluster_name" {
   type = string
-  default = "url-cluster"
 }
 
 variable "blue_https_listener" {

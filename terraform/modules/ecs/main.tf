@@ -25,7 +25,7 @@ resource "aws_security_group" "task_security" {
 
 
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecs-task-execution-role"
+  name = "ecs-task-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -50,49 +50,36 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-resource "aws_iam_role" "ecs_task_role" {
-  name = "ecs-task-role"
-    
-    assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
+resource "aws_ecs_task_definition" "ecs_task_definition" {
+  family                   = "gatusecs-task-service"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.task_cpu
+  memory                   = var.task_memory
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+
+  container_definitions = jsonencode([{
+    name      = var.service_name
+    image     = "${var.ecr_registry}/${var.ecr_repo}:${var.imagetag}"
+    cpu       = var.task_cpu
+    memory    = var.task_memory
+    essential = true
+
+    portMappings = [{
+      containerPort = var.container_port
+      hostPort      = var.container_port
+      protocol      = "tcp"
+    }]
+  }])
 
   tags = {
-    Name = "ecs-task-role"
+    Name = "gatusecs-task-service"
   }
 }
 
-data "aws_caller_identity" "current" {}
-
-resource "aws_iam_role_policy" "ecs_task_role_policy" {
-  role       = aws_iam_role.ecs_task_role.name
-  
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Action = [
-        "dynamodb:GetItem",
-        "dynamodb:PutItem"
-      ],
-      Resource = "arn:aws:dynamodb:eu-west-2:${data.aws_caller_identity.current.account_id}:table/${var.table_name}"
-    }]
-  })
-}
-
-
 
 resource "aws_ecs_cluster" "main" {
-  name = "url-cluster"
+  name = "gatus-cluster"
 
   setting {
     name  = "containerInsights"
@@ -100,12 +87,12 @@ resource "aws_ecs_cluster" "main" {
   }
 
   tags = {
-    Name = "url-cluster"
+    Name = "gatus-cluster"
   }
 }
 
-resource "aws_ecs_service" "url_service" {
-  name             = "url142-service"
+resource "aws_ecs_service" "memos_service" {
+  name             = var.service_name  
   cluster          = aws_ecs_cluster.main.id
   task_definition  = aws_ecs_task_definition.ecs_task_definition.arn
   desired_count    = 2
@@ -114,7 +101,7 @@ resource "aws_ecs_service" "url_service" {
 
   deployment_controller {
     type = "CODE_DEPLOY"
-  }  
+  }
   
   network_configuration {
     subnets          = var.private_subnets
@@ -128,87 +115,7 @@ resource "aws_ecs_service" "url_service" {
     container_port   = var.container_port
   }
 
-  lifecycle {
-    ignore_changes = [
-    task_definition,
-    load_balancer,
-  ]
-}
-
   tags = {
-    Name = "url-service"
+    Name = "gatus-service"
   }
 }
-
-resource "aws_ecs_task_definition" "ecs_task_definition" {
-  family                   = "ecs-task-service"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = var.task_cpu
-  memory                   = var.task_memory
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn            = aws_iam_role.ecs_task_role.arn
-
-  container_definitions = jsonencode([
-    {
-      name      = var.service_name
-      image     = "${var.ecr_registry}/${var.ecr_repo}:${var.imagetag}"
-      essential = true
-
-      portMappings = [
-        {
-          containerPort = var.container_port
-          hostPort      = var.container_port
-          protocol      = "tcp"
-        }
-      ]
-
-      logConfiguration = {
-        logDriver = "awslogs",
-        options = {
-          awslogs-group         = aws_cloudwatch_log_group.ecs_cw.name
-          awslogs-region        = var.aws_region
-          awslogs-stream-prefix = var.service_name
-        }
-      }
-
-      environment = [
-        {
-          name  = "TABLE_NAME"
-          value = var.table_name 
-        },
-        {
-          name  = "AWS_REGION"
-          value = var.aws_region
-        }
-      ]
-    }
-  ])
-
-  tags = {
-    Name = "urlecs-task-service"
-  }
-}
-
-
-resource "aws_cloudwatch_log_group" "ecs_cw" {
-  name = "ECSCloudWatch"
-  retention_in_days = 3
-
-  tags = {
-    Environment = "production"
-    Application = "ECS"
-  }
-}
-
-resource "aws_dynamodb_table" "url" {
-  name         = var.table_name
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key = "TableHashKey"
-
-attribute {
-  name = "TableHashKey"
-  type = "S"
-  }
-}
-

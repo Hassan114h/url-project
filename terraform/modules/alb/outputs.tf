@@ -17,7 +17,7 @@ output "blue_https_listener" {
   value = aws_lb_listener.alb_listener_https.arn
 }
 
-output "green_listener_test" {
+ output "green_listener_test" {
   description = "Allows testing of Green TG by sending real traffic"
   value = aws_lb_listener.alb_listener_test.arn
 }
@@ -29,4 +29,5 @@ output "alb_hosted_zone_id" {
 output "alb_dns_name" {
   value    = aws_lb.application_load_balancer.dns_name
 }
+
 

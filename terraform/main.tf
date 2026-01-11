@@ -1,7 +1,3 @@
-module "tf-state" {
-    source = "./modules/tf-state"
-}
-
 module "vpc" {
   source = "./modules/vpc"
   task_security_group_id = module.ecs.task_security_group_id
@@ -22,16 +18,16 @@ module "ecs" {
   alb_target_arn  = module.alb.alb_target_blue
 }
 
-module "route53" {
-  source = "./modules/route53"
-  alb_dns_name       = module.alb.alb_dns_name
-  alb_hosted_zone_id = module.alb.alb_hosted_zone_id
-}
+# module "route53" {
+#   source = "./modules/route53"
+#   alb_dns_name       = module.alb.alb_dns_name
+#   alb_hosted_zone_id = module.alb.alb_hosted_zone_id
+# }
 
-module "codedeploy" {
-  source = "./modules/codedeploy"
-  blue_https_listener = module.alb.blue_https_listener
-  green_listener_test = module.alb.green_listener_test
-  alb_target_blue = module.alb.alb_target_blue
-  alb_target_green = module.alb.alb_target_green
-}
+# module "codedeploy" {
+#   source = "./modules/codedeploy"
+#   blue_https_listener = module.alb.blue_https_listener
+#   green_listener_test = module.alb.green_listener_test
+#   alb_target_blue = module.alb.alb_target_blue
+#   alb_target_green = module.alb.alb_target_green
+# }

@@ -1,4 +1,3 @@
-#DEFINING IAM ROLE 
 resource "aws_iam_role" "codedeploy" {
   name = "codedeployrole"
 
@@ -21,18 +20,18 @@ resource "aws_iam_role" "codedeploy" {
 }
 
 resource "aws_iam_role_policy_attachment" "AWSCodeDeployRole" {
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS"
   role       = aws_iam_role.codedeploy.name
 }
 
-resource "aws_codedeploy_app" "url" {
+resource "aws_codedeploy_app" "gatus" {
   compute_platform = "ECS"
-  name             = "url14codedeploy"
+  name             = "gatus114codedeploy"
 }
 
-resource "aws_codedeploy_deployment_group" "example" {
-  app_name               = aws_codedeploy_app.url.name 
-  deployment_config_name = "CodeDeployDefault.ECSAllAtOnce"
+resource "aws_codedeploy_deployment_group" "blue_green_strategy" {
+  app_name               = aws_codedeploy_app.gatus.name 
+  deployment_config_name = "CodeDeployDefault.ECSLinear10PercentEvery1Minute"
   deployment_group_name  = "bluegreen"
   service_role_arn       = aws_iam_role.codedeploy.arn
 
@@ -65,11 +64,11 @@ resource "aws_codedeploy_deployment_group" "example" {
   load_balancer_info {
     target_group_pair_info {
       prod_traffic_route {
-        listener_arns = [var.blue_https_listener] ## Create this
+        listener_arns = [var.blue_https_listener] 
       }
 
     test_traffic_route {
-      listener_arns = [var.green_listener_test] ##Reference this
+      listener_arns = [var.green_listener_test] 
     }
 
       target_group {
