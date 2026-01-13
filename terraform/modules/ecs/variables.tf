@@ -1,6 +1,6 @@
 variable "service_name" {
   type    = string
-  default = "gatus_sv"
+  default = "url_sv"
 }
 
 variable "region" {
@@ -44,7 +44,7 @@ variable "ecr_registry" {
 variable "ecr_repo" {
   description = "ECR repository name"
   type        = string
-  default     = "gatusapp-repo-e"
+  default     = "url-project"
 }
 
 variable "imagetag" {

@@ -4,7 +4,7 @@ output "task_security_group_id" {
 }
 
 output "ecs_service_name" {
-  value = aws_ecs_service.memos_service.name
+  value = aws_ecs_service.url.name
 }
 
 output "ecs_cluster_name" {

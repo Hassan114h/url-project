@@ -23,8 +23,33 @@ resource "aws_security_group" "task_security" {
   }
 }
 
-
 resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecs-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  tags = {
+    Name = "ecs-execution-role"
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_iam_role" "task_role" {
   name = "ecs-task-role"
 
   assume_role_policy = jsonencode({
@@ -45,10 +70,26 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+resource "aws_iam_role_policy" "ecs_ddb_policy" {
+  name = "ecs-ddb-policy"
+  role = aws_iam_role.task_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+        ]
+        Resource = aws_dynamodb_table.dynamotable.arn
+      }
+    ]
+  })
 }
+  
+
 
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   family                   = "gatusecs-task-service"
@@ -57,6 +98,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   cpu                      = var.task_cpu
   memory                   = var.task_memory
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn =  aws_iam_role.task_role.arn
 
   container_definitions = jsonencode([{
     name      = var.service_name
@@ -64,6 +106,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     cpu       = var.task_cpu
     memory    = var.task_memory
     essential = true
+    environment =[{"name": "TABLE_NAME", "value": "urldynamodb"}]
 
     portMappings = [{
       containerPort = var.container_port
@@ -74,6 +117,9 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
   tags = {
     Name = "gatusecs-task-service"
+  }
+  lifecycle {
+    ignore_changes = [task_definition]
   }
 }
 
@@ -91,13 +137,12 @@ resource "aws_ecs_cluster" "main" {
   }
 }
 
-resource "aws_ecs_service" "memos_service" {
+resource "aws_ecs_service" "url" {
   name             = var.service_name  
   cluster          = aws_ecs_cluster.main.id
   task_definition  = aws_ecs_task_definition.ecs_task_definition.arn
   desired_count    = 2
   launch_type      = "FARGATE"
-  platform_version = "LATEST"
 
   deployment_controller {
     type = "CODE_DEPLOY"
@@ -118,4 +163,19 @@ resource "aws_ecs_service" "memos_service" {
   tags = {
     Name = "gatus-service"
   }
+}
+
+resource "aws_dynamodb_table" "dynamotable" {
+  name = "urldynamodb"
+  billing_mode = "PAY_PER_REQUEST"
+
+  hash_key = "urldynamodb"
+  attribute {
+    name = "urldynamodb"
+    type = "S"  # String data type
+  }
+
+ tags = {
+   Name = "urldynamodb_table"
+ }
 }
