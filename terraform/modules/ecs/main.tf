@@ -107,7 +107,14 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
     memory    = var.task_memory
     essential = true
     environment =[{"name": "TABLE_NAME", "value": "urldynamodb"}]
-
+    logConfiguration = {
+    logDriver = "awslogs"
+    options = {
+      awslogs-group         = "/ecs/${var.service_name}"
+      awslogs-region        = "eu-west-1"
+      awslogs-stream-prefix = "ecs"
+    }
+  }
     portMappings = [{
       containerPort = var.container_port
       hostPort      = var.container_port
@@ -117,9 +124,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
   tags = {
     Name = "gatusecs-task-service"
-  }
-  lifecycle {
-    ignore_changes = [task_definition]
   }
 }
 
@@ -163,15 +167,18 @@ resource "aws_ecs_service" "url" {
   tags = {
     Name = "gatus-service"
   }
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
 }
 
 resource "aws_dynamodb_table" "dynamotable" {
   name = "urldynamodb"
   billing_mode = "PAY_PER_REQUEST"
 
-  hash_key = "urldynamodb"
+  hash_key = "id"
   attribute {
-    name = "urldynamodb"
+    name = "id"
     type = "S"  # String data type
   }
 
