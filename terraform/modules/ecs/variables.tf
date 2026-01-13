@@ -50,7 +50,7 @@ variable "ecr_repo" {
 variable "imagetag" {
   description = "Docker image tag to deploy"
   type        = string
-  default     = "v1"
+  default     = "v2"
 }
 
 variable "container_port" {
