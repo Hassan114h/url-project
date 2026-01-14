@@ -23,22 +23,22 @@ jobs:
 
     - name: Login to Amazon ECR
       id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
+      uses: aws-actions/amazon-ecr-login@v3
 
     - name: Build Docker image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       run: |
-        docker build -f ./app/Dockerfile -t $ECR_REGISTRY/url-project:v2 ./app
+        docker build -f ./app/Dockerfile -t $ECR_REGISTRY/url-project:v3 ./app
 
     - name: Trivy Image Scan (fail on HIGH/CRITICAL)
       uses: aquasecurity/trivy-action@0.24.0
       with:
-        image-ref: ${{ steps.login-ecr.outputs.registry }}/url-project:v2
+        image-ref: ${{ steps.login-ecr.outputs.registry }}/url-project:v3
         severity: HIGH,CRITICAL
 
     - name: Push Docker image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       run: |
-        docker push $ECR_REGISTRY/url-project:v2
+        docker push $ECR_REGISTRY/url-project:v3
