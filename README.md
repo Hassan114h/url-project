@@ -62,11 +62,4 @@ This project provides a fully functional, production-ready deployment of a **con
 
 <img width="911" height="752" alt="image" src="https://github.com/user-attachments/assets/51ddc869-972d-415d-8c23-3891fb34c948" />
 
----
 
-## How To Use It
-
-### Prerequisites
-
-- OIDC role configured in AWS
-- S3 bucket for Terraform remote state
