@@ -70,9 +70,3 @@ This project provides a fully functional, production-ready deployment of a **con
 
 - OIDC role configured in AWS
 - S3 bucket for Terraform remote state
-
-### Steps
-
-```bash
-git clone https://github.com/hassan114h/url-shortener-ecs-fargate
-cd url-shortener-ecs-fargate
