@@ -60,7 +60,7 @@ This project provides a fully functional, production-ready deployment of a **con
 
 ## Architecture Diagram
 
-<img width="800" height="679" alt="image" src="https://github.com/user-attachments/assets/08cc8082-bcc9-4389-a244-baab1457b6b6" />
+<img width="911" height="752" alt="image" src="https://github.com/user-attachments/assets/51ddc869-972d-415d-8c23-3891fb34c948" />
 
 ---
 
