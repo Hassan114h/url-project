@@ -12,5 +12,7 @@ ENV PYTHONPATH=/usr/local/lib/python3.11/site-packages
 COPY --from=build /install /usr/local
 COPY --from=build /app /app
 
+USER 65532:65532
+
 EXPOSE 8080
 CMD ["-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8080"]
