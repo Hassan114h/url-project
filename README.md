@@ -61,7 +61,7 @@ This project provides a fully functional, production-ready deployment of a **con
 
 ## Architecture Diagram
 
-<img width="911" height="752" alt="image" src="https://github.com/user-attachments/assets/51ddc869-972d-415d-8c23-3891fb34c948" />
+<img width="1144" height="792" alt="image" src="https://github.com/user-attachments/assets/6a91d999-27f5-4005-aaad-e47244b20c10" />
 
 ---
 
@@ -75,6 +75,5 @@ https://github.com/user-attachments/assets/21c7dc07-9485-4422-b825-c5c921bfb4c6
 
 <img width="1030" height="731" alt="image" src="https://github.com/user-attachments/assets/a80047e4-5043-42bf-b6a4-76ce8b3776ee" />
 
-<img width="1604" height="561" alt="image" src="https://github.com/user-attachments/assets/953a0199-38a3-44fb-aefe-5465f7468559" />
 
----
+<img width="1604" height="561" alt="image" src="https://github.com/user-attachments/assets/953a0199-38a3-44fb-aefe-5465f7468559" />
