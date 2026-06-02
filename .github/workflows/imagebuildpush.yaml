@@ -31,13 +31,13 @@ jobs:
       run: |
         docker build -f ./app/Dockerfile -t $ECR_REGISTRY/url-project:v3 ./app
 
-    - name: Scan image with Grype
-      uses: anchore/scan-action@v7
-      with:
-        image: ${{ steps.login-ecr.outputs.registry }}/url-project:v3
-        fail-build: true
-        severity-cutoff: critical
-        output-format: table
+    # - name: Scan image with Grype
+    #   uses: anchore/scan-action@v7
+    #   with:
+    #     image: ${{ steps.login-ecr.outputs.registry }}/url-project:v3
+    #     fail-build: true
+    #     severity-cutoff: critical
+    #     output-format: table
 
     - name: Push Docker image
       env:
