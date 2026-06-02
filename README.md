@@ -10,7 +10,8 @@
 </div>
 
 ## Navigation
-[Key Features](#key-features) • [Architecture Diagram](#architecture-diagram) • [How To Use It](#how-to-use-it) • [App Walkthrough](#app-walkthrough)
+[Key Features](#key-features) • [Architecture Diagram](#architecture-diagram) • [App Walkthrough](#app-walkthrough) • [Code Deploy](#Code-Deploy) 
+
 
 ---
 
@@ -62,4 +63,18 @@ This project provides a fully functional, production-ready deployment of a **con
 
 <img width="911" height="752" alt="image" src="https://github.com/user-attachments/assets/51ddc869-972d-415d-8c23-3891fb34c948" />
 
+---
 
+## App Walkthrough 
+
+https://github.com/user-attachments/assets/21c7dc07-9485-4422-b825-c5c921bfb4c6
+
+---
+
+## Code Deploy
+
+<img width="1030" height="731" alt="image" src="https://github.com/user-attachments/assets/a80047e4-5043-42bf-b6a4-76ce8b3776ee" />
+
+<img width="1604" height="561" alt="image" src="https://github.com/user-attachments/assets/953a0199-38a3-44fb-aefe-5465f7468559" />
+
+---
